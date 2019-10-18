@@ -119,7 +119,6 @@ class PastaController extends Controller
      */
     public function store(Request $request)
     {
-//       dd($request);
        $this->validate($request,[
 				 'body'=>'required',
 				]);
@@ -156,6 +155,7 @@ class PastaController extends Controller
     public function show($id)
     {
 	$ctime = time();
+	$lang=null;
         $vars['pastas']=$this->pastas_public($ctime);
 
         if(Auth::check())
@@ -171,11 +171,13 @@ class PastaController extends Controller
 								['user_id','=',$user_id],
 								['hash','=',$id]
 				              		   ]);
-						})->get();
+						})->first();
 	
 	
-	//$vars['lang']=(Linguist::select('name')->where('id',$vars['result'][0]->lang_id)->get());
-	$lang=Linguist::where('id',$vars['result'][0]->lang_id)->first();
+	if($vars['result']!=null)
+	{
+		$lang=Linguist::where('id',$vars['result']->lang_id)->first();
+	}
 	if ($lang!=null)
 		$vars['lang']=$lang->name;
 	return view('show',$vars);

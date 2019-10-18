@@ -18,13 +18,13 @@
                 <div class="card-header">PASTA</div>
 
                 <div class="card-body">
-			@isset($result[0]->body)
+			@isset($result->body)
 				<pre style="overflow:auto; white-space: pre-wrap">
 				<code 
 				@isset($lang)
 				     class="{{ $lang }}"
 				@endisset
-				>{{ $result[0]->body }}</code>
+				>{{ $result->body }}</code>
 				</pre>
 				
 			@else
