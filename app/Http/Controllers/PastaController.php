@@ -64,18 +64,8 @@ class PastaController extends Controller
 
     private function pastas_priv($id,$timer)
     {
-/*        return Pasta::where([
-                               ['user_id','=',$id],
-                           ])->where(
-                                function($q) use ($timer)
-                                {
-                                    $q->where('up_to','>=',$this->timer)
-                                    ->orWhereNull('up_to');
-                                })
-                           ->orderBy('id','desc')->paginate(10);
-*/
 	return $this->pastas_priv_filter($id,$timer,'');  
-     }
+    }
  
 
     public function index()
@@ -132,17 +122,8 @@ class PastaController extends Controller
 
 	$record->up_to=($request->timer) ? time()+$request->timer : null;
 
-/*	if ($request->timer == 0)
-		$record->up_to=null;
-	else 
-	{
-		$cur_time=now()->timestamp;
-	}
-*/
 	$record->save();
 	
-	//Pasta::create($request->all());
-
 	return redirect('/');
     }
 
@@ -204,9 +185,10 @@ class PastaController extends Controller
 		$vars['result']=NULL;
 	    else
 	        $vars['result']=$this->pastas_public_filter($ctime,$txt);	    
-            $vars['pastas']=$this->pastas_public($ctime);
 	}
-	//dd($vars);
+
+        $vars['pastas']=$this->pastas_public($ctime);
+
 	return view('search',$vars);
     }
 }
