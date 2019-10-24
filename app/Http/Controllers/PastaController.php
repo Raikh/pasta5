@@ -42,6 +42,52 @@ class PastaController extends Controller
                             )->orderBy('id','desc')->take(10)->get();
     }
 
+    private function pastas_public_search($timer,$txt)
+    {
+        return Pasta::where([
+                                ['is_listed','=','1'],
+                                ['is_private','=','0'],
+                           ])->where(
+                                function($q) use ($timer)
+                                {
+                                    $q->where('up_to','>=',$timer)
+                                    ->orWhereNull('up_to');
+                                }
+                            )->where(
+                                function($q) use ($txt)
+                                {
+                                    $q->where('body','LIKE',"%$txt%")
+                                        ->orWhere('hash','LIKE',"%$txt%");
+                                }
+                            )->orderBy('id','desc')->paginate(10);
+    }
+
+
+    private function pastas_priv_search($id,$timer,$txt)
+    {
+        return Pasta::where(
+			    function($q) use ($id)
+			    {
+				$q->where([
+	        	                        ['is_listed','=','1'],
+        	        	                ['is_private','=','0'],
+                           		])->orWhere('user_id','=',$id);
+			    }
+			    )->where(
+                                function($q) use ($timer)
+                                {
+                                    $q->where('up_to','>=',$timer)
+                                    ->orWhereNull('up_to');
+                                }
+                            )->where(
+                                function($q) use ($txt)
+                                {
+                                    $q->where('body','LIKE',"%$txt%")
+                                        ->orWhere('hash','LIKE',"%$txt%");
+                                }
+                            )->orderBy('id','desc')->paginate(10);
+
+    }
 
     private function pastas_priv_filter($id,$timer,$txt)
     {
@@ -170,13 +216,15 @@ class PastaController extends Controller
         $txt=$request->s_string;
 	$ctime=time();
 
-	error_log($txt);
+	//error_log($txt);
 	if( Auth::check() )
 	{
 	    if (strlen($txt)==0) 
 		$vars['result']=NULL;
 	    else
-	        $vars['result']=$this->pastas_priv_filter(Auth::id(),$ctime,$txt);
+	    {
+	        $vars['result']=$this->pastas_priv_search(Auth::id(),$ctime,$txt);
+	    }
 	    $vars['pastas_priv']=$this->pastas_priv(Auth::id(),$ctime);
 	}
 	else 
@@ -184,7 +232,7 @@ class PastaController extends Controller
 	    if (strlen($txt)==0) 
 		$vars['result']=NULL;
 	    else
-	        $vars['result']=$this->pastas_public_filter($ctime,$txt);	    
+	        $vars['result']=$this->pastas_public_search($ctime,$txt);	    
 	}
 
         $vars['pastas']=$this->pastas_public($ctime);
