@@ -176,7 +176,7 @@ class PastaController extends Controller
 	    if (strlen($txt)==0) 
 		$vars['result']=NULL;
 	    else
-	        $vars['result']=$this->pastas_private_filter(Auth::id(),$ctime,$txt);
+	        $vars['result']=$this->pastas_priv_filter(Auth::id(),$ctime,$txt);
 	    $vars['pastas_priv']=$this->pastas_priv(Auth::id(),$ctime);
 	}
 	else 
